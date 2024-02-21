@@ -19,6 +19,7 @@
 #include <stdarg.h>
 
 #include <cassert>
+#include <cinttypes>
 
 #include "Str.h"
 
@@ -56,7 +57,7 @@ class Log {
     //! @returns Returns true if `level` should be logged based on the current logging level.
     bool should_log(Level level  //!< [in] Log level to test.
     ) const {
-        return level < this->curr_level;
+        return static_cast<uint_fast8_t>(level) <= static_cast<uint_fast8_t>(this->curr_level);
     }
 
     //! Returns the current logging level.
@@ -73,105 +74,45 @@ class Log {
     static void debug(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) __attribute__((format(printf, 1, 2))) {
-        if constexpr (LOGGING_ENABLED) {
-            if (logger != nullptr && logger->should_log(Level::DEBUG)) {
-                va_list args;
-                va_start(args, fmt);
-                logger->do_log(Level::DEBUG, fmt, args);
-                va_end(args);
-            }
-        }
-    }
+        ) noexcept __attribute__((format(printf, 1, 2)));
 
     //! Prints an info level log.
     static void info(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) __attribute__((format(printf, 1, 2))) {
-        if constexpr (LOGGING_ENABLED) {
-            if (logger != nullptr && logger->should_log(Level::INFO)) {
-                va_list args;
-                va_start(args, fmt);
-                logger->do_log(Level::INFO, fmt, args);
-                va_end(args);
-            }
-        }
-    }
+        ) noexcept __attribute__((format(printf, 1, 2)));
 
     //! Prints a warning level log.
     static void warning(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) __attribute__((format(printf, 1, 2))) {
-        if constexpr (LOGGING_ENABLED) {
-            if (logger != nullptr && logger->should_log(Level::WARNING)) {
-                va_list args;
-                va_start(args, fmt);
-                logger->do_log(Level::INFO, fmt, args);
-                va_end(args);
-            }
-        }
-    }
+        ) noexcept __attribute__((format(printf, 1, 2)));
 
     //! Prints an error level log.
     static void error(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) __attribute__((format(printf, 1, 2))) {
-        if constexpr (LOGGING_ENABLED) {
-            if (logger != nullptr && logger->should_log(Level::ERROR)) {
-                va_list args;
-                va_start(args, fmt);
-                logger->do_log(Level::INFO, fmt, args);
-                va_end(args);
-            }
-        }
-    }
+        ) noexcept __attribute__((format(printf, 1, 2)));
 
     //! Prints a fatal level log.
     static void fatal(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) __attribute__((format(printf, 1, 2))) {
-        if constexpr (LOGGING_ENABLED) {
-            if (logger != nullptr && logger->should_log(Level::FATAL)) {
-                va_list args;
-                va_start(args, fmt);
-                logger->do_log(Level::INFO, fmt, args);
-                va_end(args);
-            }
-        }
-    }
+        ) noexcept __attribute__((format(printf, 1, 2)));
 
     //! Logs a message of the indicated level using varadic arguments.
-    void log(
+    static void log(
         Level level,      //!< [in] Level associated with this message.
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) __attribute__((format(printf, 3, 4))) {
-        if constexpr (LOGGING_ENABLED) {
-            if (this->should_log(level)) {
-                va_list args;
-                va_start(args, fmt);
-                this->vlog(Level::INFO, fmt, args);
-                va_end(args);
-            }
-        }
-    }
+        ) noexcept __attribute__((format(printf, 2, 3)));
 
     //! Logs a message of the indicated level using a va_list/
-    void vlog(
+    static void vlog(
         Level level,      //!< [in] Level associated with this message.
         const char* fmt,  //!< [in] printf style format string.
         va_list args      //!< [in] List of parameters
-        ) __attribute__((format(printf, 3, 0))) {
-        if constexpr (LOGGING_ENABLED) {
-            if (this->should_log(level)) {
-                this->do_log(level, fmt, args);
-            }
-        }
-    }
+        ) noexcept __attribute__((format(printf, 2, 0)));
 
  protected:
     //! Function which performs the actual logging.
@@ -179,7 +120,7 @@ class Log {
         Level level,      //!< [in] Level associated with this message.
         const char* fmt,  //!< [in] printf style format string.
         va_list args      //!< [in] List of parameters
-        ) __attribute__((format(printf, 3, 0))) = 0;
+        ) noexcept __attribute__((format(printf, 3, 0))) = 0;
 
     Level curr_level = Level::DEBUG;  //!< Current logging level.
     static Log* logger;               //!< Pointer to the current logger.

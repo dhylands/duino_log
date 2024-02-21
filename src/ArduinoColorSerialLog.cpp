@@ -8,17 +8,21 @@
  *
  ****************************************************************************/
 /**
- *   @file   Util.h
+ *   @file   ArduinoColorSerialLog.h
  *
- *   @brief  Simple utility functions/macros
+ *   @brief  Arduino logger which logs to the Serial device.
  *
  ****************************************************************************/
 
-#pragma once
-
 #include "ArduinoColorSerialLog.h"
-#include "ArduinoSerialLog.h"
-#include "DumpMem.h"
-#include "Log.h"
-#include "Str.h"
-#include "Util.h"
+
+const char* ArduinoColorSerialLog::level_str[] = {
+    // clang-format off
+                        "",     // NONE
+    COLOR_MAGENTA       "[F] ",  // FATAL
+    COLOR_RED           "[E] ",  // ERROR
+    COLOR_YELLOW        "[W] ",  // WARNING
+                        "[I] ",  // INFO
+    COLOR_DARK_WHITE    "[D] ",  // DEBUG
+    // clang-format off
+};

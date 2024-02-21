@@ -21,8 +21,8 @@
 //! Global logger object
 ArduinoSerialLog serial_log{&Serial};
 
-uint8_t data[] = {0x11, 0x22, 0x33, 0x44, 0x55, 'T',  'h',  'i',  's',  ' ',
-                  'i',  's',  ' ',  'a',  ' ',  't',  'e',  's',  't',  0};
+static uint8_t data[] = {0x11, 0x22, 0x33, 0x44, 0x55, 'T', 'h', 'i', 's', ' ',
+                         'i',  's',  ' ',  'a',  ' ',  't', 'e', 's', 't', 0};
 
 //! Perform one-time setup
 void setup(void) {
@@ -31,7 +31,7 @@ void setup(void) {
 
 static uint32_t counter = 0;
 
-char line[100];
+static char line[100];
 
 //! Runs indefinitely
 void loop(void) {

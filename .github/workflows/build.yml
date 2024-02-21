@@ -5,29 +5,44 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./DuinoLog
     steps:
     - name: Checkout DuinoLog
       uses: actions/checkout@v4
+      with:
+        path: DuinoLog
 
     - name: Checkout DuinoMakefile
       uses: actions/checkout@v4
       with:
         repository: dhylands/DuinoMakefile
+        path: DuinoMakefile
 
     - name: Install gtest manually
       run: sudo apt install libgtest-dev
+
     - name: Run Unit Tests
-      run: make BOARD=pico TOP_DIR=. unittest
+      run: make BOARD=pico unittest
 
     - name: Install cpplint
       run: sudo apt install cpplint
+
     - name: Run Linter
-      run: make BOARD=pico TOP_DIR=. lint
+      run: make BOARD=pico lint
 
     - name: Install doxygen
       run: sudo apt install doxygen graphviz
+
     - name: Test that docs passes
-      run: make BOARD=pico TOP_DIR=. docs
+      run: make BOARD=pico docs
 
     - name: Test Code Formatting
-      run: make BOARD=pico TOP_DIR=. test-style
+      run: make BOARD=pico test-style
+
+    - name: Install gcovr
+      run: pip install gcovr
+
+    - name: Test Coverage
+      run: make BOARD=pico coverage V=1

@@ -10,7 +10,7 @@
 /**
  *   @file   DumpMemTest.cpp
  *
- *   @brief  Memmory dump routine
+ *   @brief  Tests for functions in DumpMem.cpp
  *
  ****************************************************************************/
 
@@ -19,6 +19,7 @@
 #include <stdarg.h>
 #include <gtest/gtest.h>
 #include <string>
+#include <sstream>
 
 #include "DumpMem.h"
 #include "Log.h"
@@ -41,7 +42,7 @@ class DumpMemLogger : public Log {
         Level level,      //!< [in] Logging level associated with the current messgae.
         const char* fmt,  //!< [in] Printf style format string.
         va_list args      //!< [in] Arguments associated with the format string.
-        ) override {
+        ) noexcept override {
         (void)level;
         char line[100];
 
@@ -93,6 +94,14 @@ TEST(DumpLineTest, DumpLineOneLine) {
         line, "Test: 0000: 00 01 02 31 32 33 41 42 43 11 12 13 36 37 38 39 ...123ABC...6789");
 }
 
+TEST(DumpLineTest, DumpLineOneLineTruncated) {
+    char line[65];
+
+    DumpLine("Test", 0, data, 16, LEN(line), line);
+
+    EXPECT_STREQ(line, "Test: 0000: 00 01 02 31 32 33 41 42 43 11 12 13 36 37 38 39 ");
+}
+
 TEST_F(DumpMemTestFixture, DumpMemNoData) {
     DumpMem("Test", 0, data, 0);
     EXPECT_STREQ(logger.str.c_str(), "Test: No Data");
@@ -137,4 +146,42 @@ TEST_F(DumpMemTestFixture, DumpMemTwoLines) {
         logger.str.c_str(),
         "Test: 0000: 00 01 02 31 32 33 41 42 43 11 12 13 36 37 38 39 ...123ABC...6789\n"
         "Test: 0010: 20 21 22 23 24 25 61 62 63 64 65 66 67 68 69 6a  !\"#$%abcdefghij");
+}
+
+TEST(DumpMemStreamTest, NoDataSimpleConstructor) {
+    std::ostringstream output;
+
+    output << dump(data, 0);
+
+    EXPECT_STREQ(output.str().c_str(), "\nNo Data\n");
+}
+
+TEST(DumpMemStreamTest, NoDataFullConstructor) {
+    std::ostringstream output;
+
+    output << dump("Test", 0, data, 0);
+
+    EXPECT_STREQ(output.str().c_str(), "\nTest: No Data\n");
+}
+
+TEST(DumpMemStreamTest, DataSimpleConstructor) {
+    std::ostringstream output;
+
+    output << dump(data, 24);
+
+    EXPECT_STREQ(
+        output.str().c_str(),
+        "\n0000: 00 01 02 31 32 33 41 42 43 11 12 13 36 37 38 39 ...123ABC...6789\n"
+        "0010: 20 21 22 23 24 25 61 62                          !\"#$%ab\n");
+}
+
+TEST(DumpMemStreamTest, DataFullConstructor) {
+    std::ostringstream output;
+
+    output << dump("Test", 0, data, 24);
+
+    EXPECT_STREQ(
+        output.str().c_str(),
+        "\nTest: 0000: 00 01 02 31 32 33 41 42 43 11 12 13 36 37 38 39 ...123ABC...6789\n"
+        "Test: 0010: 20 21 22 23 24 25 61 62                          !\"#$%ab\n");
 }

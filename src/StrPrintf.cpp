@@ -78,7 +78,10 @@ enum FmtOption : uint8_t {
     MINUS_SIGN = 0x01,     //!< Should we print a minus sign?
     RIGHT_JUSTIFY = 0x02,  //!< Should field be right justified?
     ZERO_PAD = 0x04,       //!< Should field be zero padded?
-    CAPITAL_HEX = 0x08     //!< Did we encounter %X?
+    CAPITAL_HEX = 0x08,    //!< Did we encounter %X?
+    PLUS_SIGN = 0x10,      //!< Should we print a Plus sign?
+    SPACE_SIGN = 0x20,     //!< Should we print a space for the sign?
+    OUTPUT_BASE = 0x40,    //!< Should we print the base (i.e. 0, 0x, 0b)
 };
 
 //! Internal structure which is used to allow vStrXPrintf() to be reentrant.
@@ -124,8 +127,8 @@ typedef struct {
 /* ---- Private Function Prototypes -------------------------------------- */
 
 static void OutputChar(Parameters* p, char c);
-static void OutputField(Parameters* p, char* s);
-static size_t StrPrintfFunc(void* outParm, char ch);
+static void OutputField(Parameters* p, char* s, uint16_t base);
+static size_t StrPrintfFunc(void* outParm, char ch) noexcept;
 
 //!@}
 
@@ -138,19 +141,7 @@ static size_t StrPrintfFunc(void* outParm, char ch);
  * @{
  */
 
-/***************************************************************************/
-//! @brief Writes formatted data into a user supplied buffer.
-//!
-//! @return  The number of characters actually contained in `outStr`, not
-//!          including the temrinating null character. This differs slightly
-//!          from snprintf which returns the number of characters that would
-//!          have been written if the output buffer were unlimited in size.
-size_t StrPrintf(
-    char* outStr,     //!< [out] Place to store formatted string.
-    size_t maxLen,    //!< [in] Length out `outStr`.
-    const char* fmt,  //!< [in] Printf style format string.
-    ...               //!< [in] Varadic arguments associated with format string.
-) {
+size_t StrPrintf(char* outStr, size_t maxLen, const char* fmt, ...) noexcept {
     int rc;
     va_list args;
 
@@ -161,27 +152,7 @@ size_t StrPrintf(
     return rc;
 }
 
-/***************************************************************************/
-/**
- *  Generic printf function which writes formatted data by calling a user
- *  supplied function.
- *
- *  @a outFunc will be called to output each character. If @a outFunc returns
- *  a number >= 0, then StrXPrintf will continue to call @a outFunc with
- *  additional characters.
- *
- *  If @a outFunc returns a negative number, then StrXPrintf will stop
- *  calling @a outFunc and will return the negative return value.
- *
- *  @param   outFunc  (in)  Pointer to function to call to do the actual output.
- *  @param   outParm  (in)  Passed to @a outFunc.
- *  @param   fmt      (in)  Format string (see vStrXPrintf() for sull details).
- *
- *  @return  The number of characters successfully output, or a negative number
- *           if an error occurred.
- */
-
-size_t StrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, ...) {
+size_t StrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, ...) noexcept {
     int rc;
     va_list args;
 
@@ -192,22 +163,7 @@ size_t StrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, ...) {
     return rc;
 }
 
-/***************************************************************************/
-/**
- *  Writes formatted data into a user supplied buffer.
- *
- *  @param   outStr   (out) Place to store the formatted string.
- *  @param   maxLen   (in)  Max number of characters to write into @a outStr.
- *  @param   fmt      (in)  Format string (see vStrXPrintf() for sull details).
- *  @param   args     (in)  Arguments in a format compatible with va_arg().
-
- *  @return  The number of characters actually contained in `outStr`, not
- *           including the temrinating null character. This differs slightly
- *           from snprintf which returns the number of characters that would
- *           have been written if the output buffer were unlimited in size.
- */
-
-size_t vStrPrintf(char* outStr, size_t maxLen, const char* fmt, va_list args) {
+size_t vStrPrintf(char* outStr, size_t maxLen, const char* fmt, va_list args) noexcept {
     str::StrPrintfParms strParm;
 
     strParm.str = outStr;
@@ -216,96 +172,7 @@ size_t vStrPrintf(char* outStr, size_t maxLen, const char* fmt, va_list args) {
     return vStrXPrintf(str::StrPrintfFunc, &strParm, fmt, args);
 }
 
-/***************************************************************************/
-/**
- *  Generic, reentrant printf function. This is the workhorse of the StrPrintf
- *  functions.
- *
- *  @a outFunc will be called to output each character. If @a outFunc returns
- *  a number >= 0, then vStrXPrintf will continue to call @a outFunc with
- *  additional characters.
- *
- *  If @a outFunc returns a negative number, then vStrXPrintf will stop calling
- *  @a outFunc and will return the negative return value.
- *
- *  The format string @a fmt consists of ordinary characters, escape
- *  sequences, and format specifications. The ordinary characters and escape
- *  sequences are output in their order of appearance. Format specifications
- *  start with a percent sign (%) and are read from left to right. When
- *  the first format specification (if any) is encountered, it converts the
- *  value of the first argument after @a fmt and outputs it accordingly.
- *  The second format specification causes the second argument to be
- *  converted and output, and so on. If there are more arguments than there
- *  are format specifications, the extra arguments are ignored. The
- *  results are undefined if there are not enough arguments for all the
- *  format specifications.
- *
- *  A format specification has optional, and required fields, in the following
- *  form:
- *
- *     %[flags][width][.precision][l]type
- *
- *  Each field of the format specification is a single character or a number
- *  specifying a particular format option. The simplest format specification
- *  contains only the percent sign and a @b type character (for example %s).
- *  If a percent sign is followed by a character that has no meaning as a
- *  format field, the character is sent to the output function. For example,
- *  to print a percent-sign character, use %%.
- *
- *  The optional fields, which appear before the type character, control
- *  other aspects of the formatting, as follows:
- *
- *  @b flags may be one of the following:
- *
- *  - - (minus sign) left align the result within the given field width.
- *  - 0 (zero) Zeros are added until the minimum width is reached.
- *
- *  @b width may be one of the following:
- *  - a number specifying the minimum width of the field
- *  - * (asterick) means that an integer taken from the argument list will
- *    be used to provide the width. The @a width argument must precede the
- *    value being formatted in the argument list.
- *
- *  @b precision may be one of the following:
- *  - a number
- *  - * (asterick) means that an integer taken from the argument list will
- *    be used to provide the precision. The @a precision argument must
- *    precede the value being formatted in the argument list.
- *
- *  The interpretation of @a precision depends on the type of field being
- *  formatted:
- *  - For b, d, o, u, x, X, the precision specifies the minimum number of
- *    digits that will be printed. If the number of digits in the argument
- *    is less than @a precision, the output value is padded on the left with
- *    zeros. The value is not truncated when the number of digits exceeds
- *    @a prcision.
- *  - For s, the precision specifies the maximum number of characters to be
- *    printed.
- *
- *  The optional type modifier l (lowercase ell), may be used to specify
- *  that the argument is a long argument. This makes a difference on
- *  architectures where the sizeof an int is different from the sizeof a long.
- *
- *  @b type causes the output to be formatted as follows:
- *  - b Unsigned binary integer.
- *  - c Character.
- *  - d Signed decimal integer.
- *  - o Unsigned octal integer.
- *  - s Null terminated character string.
- *  - u Unsigned Decimal integer.
- *  - x Unsigned hexadecimal integer, using "abcdef".
- *  - X Unsigned hexadecimal integer, using "ABCDEF".
- *
- *  @param   outFunc     (in) Pointer to function to call to output a character.
- *  @param   outParm     (in) Passed to @a outFunc.
- *  @param   fmt         (in) Format string (ala printf, descrtibed above).
- *  @param   args        (in) Variable length list of arguments.
- *
- *  @return  The number of characters successfully output, or a negative number
- *           if an error occurred.
- */
-
-size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_list args) {
+size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_list args) noexcept {
     str::Parameters p;
     char controlChar;
 
@@ -319,6 +186,7 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
         if (controlChar == '%') {
             int16_t precision = -1;
             int16_t longArg = 0;
+            int16_t longLongArg = 0;
             int16_t base = 0;
 
             controlChar = pgm_read_byte(fmt++);
@@ -332,6 +200,16 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
 
             if (controlChar == '-') {
                 ClearOption(&p, str::FmtOption::RIGHT_JUSTIFY);
+                controlChar = pgm_read_byte(fmt++);
+            }
+            if (controlChar == '+') {
+                SetOption(&p, str::FmtOption::PLUS_SIGN);
+                controlChar = pgm_read_byte(fmt++);
+            } else if (controlChar == ' ') {
+                SetOption(&p, str::FmtOption::SPACE_SIGN);
+                controlChar = pgm_read_byte(fmt++);
+            } else if (controlChar == '#') {
+                SetOption(&p, str::FmtOption::OUTPUT_BASE);
                 controlChar = pgm_read_byte(fmt++);
             }
 
@@ -373,11 +251,25 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
             if (controlChar == 'l') {
                 longArg = 1;
                 controlChar = pgm_read_byte(fmt++);
+                if (controlChar == 'l') {
+                    longLongArg = 1;
+                    controlChar = pgm_read_byte(fmt++);
+                }
+            }
+
+            if (controlChar == 'h') {
+                // For %hu (unsigned short) and %hhu (unsigned char), the value is promoted to an
+                // int, so We can essentially ignore the h/hh portion.
+                controlChar = pgm_read_byte(fmt++);
+                if (controlChar == 'h') {
+                    controlChar = pgm_read_byte(fmt++);
+                }
             }
 
             // Process type.
 
-            if (controlChar == 'd') {
+            if (controlChar == 'd' || controlChar == 'i') {
+                controlChar = 'd';
                 base = 10;
             } else if (controlChar == 'x') {
                 base = 16;
@@ -400,6 +292,7 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
 
             if (base == 0) { /* invalid conversion type */
                 if (controlChar != '\0') {
+                    str::OutputChar(&p, '%');
                     str::OutputChar(&p, controlChar);
                     controlChar = pgm_read_byte(fmt++);
                 }
@@ -407,7 +300,7 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
                 if (base == -1) { /* conversion type c */
                     char c = (char)va_arg(args, int);
                     p.editedStringLen = 1;
-                    OutputField(&p, &c);
+                    OutputField(&p, &c, 10);
                 } else if (base == -2) { /* conversion type s */
                     char* string = va_arg(args, char*);
 
@@ -423,19 +316,21 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
                         }
                         p.editedStringLen++;
                     }
-                    OutputField(&p, string);
-                } else {              /* conversion type d, b, o or x */
-                    unsigned long x;  // NOLINT
+                    OutputField(&p, string, 10);
+                } else {                   /* conversion type d, b, o or x */
+                    unsigned long long x;  // NOLINT
 
                     /*
                      * Worst case buffer allocation is required for binary output,
                      * which requires one character per bit of a long.
                      */
 
-                    char buffer[CHAR_BIT * sizeof(unsigned long) + 1];  // NOLINT
+                    char buffer[CHAR_BIT * sizeof(unsigned long long) + 1];  // NOLINT
 
                     p.editedStringLen = 0;
-                    if (longArg) {
+                    if (longLongArg) {
+                        x = va_arg(args, unsigned long long);  // NOLINT
+                    } else if (longArg) {
                         x = va_arg(args, unsigned long);  // NOLINT
                     } else if (controlChar == 'd') {
                         x = va_arg(args, int);
@@ -443,9 +338,10 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
                         x = va_arg(args, unsigned);
                     }
 
-                    if ((controlChar == 'd') && ((long)x < 0)) {  // NOLINT
+                    if ((controlChar == 'd') && ((long long)x < 0)) {  // NOLINT
                         SetOption(&p, str::FmtOption::MINUS_SIGN);
-                        x = -(long)x;  // NOLINT
+                        ClearOption(&p, str::FmtOption::PLUS_SIGN);
+                        x = -(long long)x;  // NOLINT
                     }
 
                     do {
@@ -464,7 +360,7 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
                     if ((precision >= 0) && (precision > p.editedStringLen)) {
                         p.leadingZeros = precision - p.editedStringLen;
                     }
-                    OutputField(&p, buffer + sizeof(buffer) - p.editedStringLen);
+                    OutputField(&p, buffer + sizeof(buffer) - p.editedStringLen, base);
                 }
                 controlChar = pgm_read_byte(fmt++);
             }
@@ -497,10 +393,8 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
 static void str::OutputChar(Parameters* p, char c) {
     int n = (*p->outFunc)(p->outParm, c);
 
-    if (n >= 0) {
+    if (n > 0) {
         p->numOutputChars++;
-    } else {
-        p->numOutputChars = n;
     }
 }
 
@@ -514,25 +408,65 @@ static void str::OutputChar(Parameters* p, char c) {
  *  @param   s     (in)  String to output.
  */
 
-static void str::OutputField(Parameters* p, char* s) {
+static void str::OutputField(Parameters* p, char* s, uint16_t base) {
     int16_t padLen = p->minFieldWidth - p->leadingZeros - p->editedStringLen;
 
     if (IsOptionSet(p, MINUS_SIGN)) {
         if (IsOptionSet(p, ZERO_PAD)) {
-            /*
-             * Since we're zero padding, output the minus sign now. If we're space
-             * padding, we wait until we've output the spaces.
-             */
-
+            // Since we're zero padding, output the minus sign now. If we're space
+            // padding, we wait until we've output the spaces.
             OutputChar(p, '-');
         }
 
-        /*
-         * Account for the minus sign now, even if we are going to output it
-         * later. Otherwise we'll output too much space padding.
-         */
-
+        // Account for the minus sign now, even if we are going to output it
+        // later. Otherwise we'll output too much space padding.
         padLen--;
+    } else if (IsOptionSet(p, PLUS_SIGN)) {
+        if (IsOptionSet(p, ZERO_PAD)) {
+            // Since we're zero padding, output the minus sign now. If we're space
+            // padding, we wait until we've output the spaces.
+            OutputChar(p, '+');
+        }
+
+        // Account for the minus sign now, even if we are going to output it
+        // later. Otherwise we'll output too much space padding.
+        padLen--;
+    } else if (IsOptionSet(p, SPACE_SIGN)) {
+        if (IsOptionSet(p, ZERO_PAD)) {
+            // Since we're zero padding, output the minus sign now. If we're space
+            // padding, we wait until we've output the spaces.
+            OutputChar(p, ' ');
+        }
+
+        // Account for the minus sign now, even if we are going to output it
+        // later. Otherwise we'll output too much space padding.
+        padLen--;
+    } else if (IsOptionSet(p, OUTPUT_BASE) && *s != '0') {
+        // printf doesn't output the base if the value is 0
+        // Since we're zero padding, output the prefix now.
+        if (base == 16) {
+            if (IsOptionSet(p, ZERO_PAD)) {
+                OutputChar(p, '0');
+                if (IsOptionSet(p, str::FmtOption::CAPITAL_HEX)) {
+                    OutputChar(p, 'X');
+                } else {
+                    OutputChar(p, 'x');
+                }
+            }
+            padLen -= 2;
+        } else if (base == 8) {
+            if (IsOptionSet(p, ZERO_PAD)) {
+                OutputChar(p, '0');
+            }
+            p->leadingZeros--;
+            padLen--;
+        } else if (base == 2) {
+            if (IsOptionSet(p, ZERO_PAD)) {
+                OutputChar(p, '0');
+                OutputChar(p, 'b');
+            }
+            padLen -= 2;
+        }
     }
 
     if (IsOptionSet(p, RIGHT_JUSTIFY)) {
@@ -544,13 +478,35 @@ static void str::OutputField(Parameters* p, char* s) {
             OutputChar(p, p->options & ZERO_PAD ? '0' : ' ');
         }
     }
-    if (IsOptionSet(p, MINUS_SIGN) && IsOptionClear(p, ZERO_PAD)) {
-        /*
-         * We're not zero padding, which means we haven't output the minus
-         * sign yet. Do it now.
-         */
-
-        OutputChar(p, '-');
+    if (IsOptionClear(p, ZERO_PAD)) {
+        if (IsOptionSet(p, MINUS_SIGN)) {
+            // We're not zero padding, which means we haven't output the minus
+            // sign yet. Do it now.
+            OutputChar(p, '-');
+        } else if (IsOptionSet(p, PLUS_SIGN)) {
+            // We're not zero padding, which means we haven't output the plus
+            // sign yet. Do it now.
+            OutputChar(p, '+');
+        } else if (IsOptionSet(p, SPACE_SIGN)) {
+            // We're not zero padding, which means we haven't output the plus
+            // sign yet. Do it now.
+            OutputChar(p, ' ');
+        } else if (IsOptionSet(p, OUTPUT_BASE) && *s != '0') {
+            // printf doesn't output the base if the value is 0.
+            if (base == 16) {
+                OutputChar(p, '0');
+                if (IsOptionSet(p, str::FmtOption::CAPITAL_HEX)) {
+                    OutputChar(p, 'X');
+                } else {
+                    OutputChar(p, 'x');
+                }
+            } else if (base == 8) {
+                OutputChar(p, '0');
+            } else if (base == 2) {
+                OutputChar(p, '0');
+                OutputChar(p, 'b');
+            }
+        }
     }
 
     /*
@@ -591,7 +547,7 @@ static void str::OutputField(Parameters* p, char* s) {
  *           was overflowed.
  */
 
-static size_t str::StrPrintfFunc(void* outParm, char ch) {
+static size_t str::StrPrintfFunc(void* outParm, char ch) noexcept {
     str::StrPrintfParms* strParm = reinterpret_cast<str::StrPrintfParms*>(outParm);
 
     if (strParm->maxLen > 0) {
@@ -602,11 +558,44 @@ static size_t str::StrPrintfFunc(void* outParm, char ch) {
         return 1;
     }
 
-    /*
-     * Whoops. We ran out of space.
-     */
-
-    return -1;
+    // Whoops. We ran out of space.
+    return 0;
 }
 
-//!@}
+// NOTE: For some reason, doxygen considers these to be different from the Prototypes
+//       in the Str.h file, so we need to repeat the documentation part. I suspect
+//       it has something to do with using an attribute alias.
+
+//! Alias functions which don't do attribute checking.
+//! @return  The number of characters actually contained in `outStr`, not
+//!          including the temrinating null character. This differs slightly
+//!          from snprintf which returns the number of characters that would
+//!          have been written if the output buffer were unlimited in size.
+//! @{
+size_t StrBPrintf(
+    char* outStr,     //!< [out] Place to store formatted string.
+    size_t maxLen,    //!< [in] Length out `outStr`.
+    const char* fmt,  //!< [in] Printf style format string.
+    ...               //!< [in] Varadic arguments associated with format string.
+    ) noexcept __attribute__((alias("StrPrintf")));
+size_t vStrBPrintf(
+    char* outStr,     //!< [out] Place to store formatted string.
+    size_t maxLen,    //!< [in] Length out `outStr`.
+    const char* fmt,  //!< [in] Printf style format string.
+    va_list args      //!< [in] Arguments associated with the format string.
+    ) noexcept __attribute__((alias("vStrPrintf")));
+size_t StrXBPrintf(
+    StrXPrintfFunc func,  //!< [in] Function to be called for each character to output.
+    void* userParm,       //!< [in] Context passed to func().
+    const char* fmt,      //!< [in] Printf style format string.
+    ...                   //!< [in] Varadic arguments associated with format string.
+    ) noexcept __attribute__((alias("StrXPrintf")));
+size_t vStrXBPrintf(
+    StrXPrintfFunc func,  //!< [in] Function to be called for each character to output.
+    void* userParm,       //!< [in] Context passed to func().
+    const char* fmt,      //!< [in] Printf style format string.
+    va_list args          //!< [in] Arguments associated with the format string.
+    ) noexcept __attribute__((alias("vStrXPrintf")));
+//! @}
+
+//! @}

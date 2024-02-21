@@ -34,48 +34,42 @@
 
 // ---- Functions -----------------------------------------------------------
 
-char* StrMaxCat(char* dst, const char* src, size_t maxLen) {
-    size_t dstLen = strlen(dst);
+char* StrMaxCat(char* dst, const char* src, size_t maxLen) noexcept {
+    size_t dstLen = strnlen(dst, maxLen);
 
     if (dstLen < maxLen) {
         StrMaxCpy(&dst[dstLen], src, maxLen - dstLen);
+    } else if (maxLen > 0) {
+        dst[maxLen - 1] = '\0';
     }
 
     return dst;
 }
 
-char* StrMaxCpy(char* dst, const char* src, size_t maxLen) {
-    assert(maxLen > 0);
-
-    if (maxLen == 1) {
-        /*
-         * There's only room for the terminating null character
-         */
-
-        dst[0] = '\0';
+char* StrMaxCpy(char* dst, const char* src, size_t maxLen) noexcept {
+    if (maxLen <= 1) {
+        if (maxLen > 0) {
+            // There;s only room for the terminating null character
+            dst[0] = '\0';
+        }
         return dst;
     }
 
-    /*
-     * The Visual C++ version of strncpy writes to every single character
-     * of the destination buffer, so we use a length one character smaller
-     * and write in our own null (if required).
-     *
-     * This allows the caller to store a sentinel in the last byte of the
-     * buffer to detect overflows (if desired).
-     */
+    // The Visual C++ version of strncpy writes to every single character
+    //  of the destination buffer, so we use a length one character smaller
+    //  and write in our own null (if required).
+    //
+    //  This allows the caller to store a sentinel in the last byte of the
+    //  buffer to detect overflows (if desired).
 
     strncpy(dst, src, maxLen - 1);
     if ((strnlen(src, maxLen) + 1) >= maxLen) {
-        /*
-         * The string exactly fits, or probably overflows the buffer.
-         * Write in the terminating null character since strncpy doesn't in
-         * this particular case.
-         *
-         * We don't do this arbitrarily so that the caller can use a sentinel
-         * in the very end of the buffer to detect buffer overflows.
-         */
-
+        // The string exactly fits, or probably overflows the buffer.
+        // Write in the terminating null character since strncpy doesn't in
+        // this particular case.
+        //
+        // We don't do this arbitrarily so that the caller can use a sentinel
+        // in the very end of the buffer to detect buffer overflows.
         dst[maxLen - 1] = '\0';
     }
 

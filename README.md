@@ -8,12 +8,11 @@ There are 5 major submodules provided by the DuinoLog library:
 - DumpMem
 - Str
 - StrPrintf
-- Util
 
 ## Log
 
 The `Log` class provides an interface for outputting log messages.
-The actual output can be overrided. There is an example which
+The actual output can be overridden. There is an example which
 outputs to the Arduino Serial device, and another example which
 provides colorized output to the Arduino Serial device.
 
@@ -72,13 +71,3 @@ call would write beyond the end of `output` (in effect becoming a buffer overflo
 StrXPrintf allows a character output function to be provided, and that
 function will be called to output each character. This makes implementing
 a printf like function to your character LCD quite straight forward.
-
-## Util
-
-The Util.h file provides a template function called LEN which returns the
-number of elements in an array. So you can do the following:
-```
-int array[] = {1, 2, 3};
-```
-and `LEN(array)` will evaluate to `3`. The LEN template function will
-generate a compiler error if passed a bare pointer rather than an array.

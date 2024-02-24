@@ -25,7 +25,13 @@ jobs:
         repository: dhylands/DuinoMakefile
         path: DuinoMakefile
 
-    # Do the unit tests
+    - name: Checkout DuinoUtil
+      uses: actions/checkout@v4
+      with:
+        repository: dhylands/DuinoUtil
+        path: DuinoUtil
+
+      # Do the unit tests
 
     - name: Install googletest
       run: sudo apt install libgtest-dev

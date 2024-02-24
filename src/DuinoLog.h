@@ -8,9 +8,9 @@
  *
  ****************************************************************************/
 /**
- *   @file   Util.h
+ *   @file   DuinoLog.h
  *
- *   @brief  Simple utility functions/macros
+ *   @brief  Logging and string manipulation functions.
  *
  ****************************************************************************/
 

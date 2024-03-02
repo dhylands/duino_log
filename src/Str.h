@@ -47,7 +47,7 @@ extern "C" {
 //!          functions to output a character. It should return zero
 //!          to indicate that the character was not output, and 1 to indicated
 //!          that it was output.
-using StrXPrintfFunc = size_t (*)(void* outParm, char ch) noexcept;
+using StrXPrintfFunc = size_t (*)(void* outParm, char ch);
 
 // ---- Variable Externs ----------------------------------------------------
 // ---- Function Prototypes -------------------------------------------------
@@ -60,7 +60,7 @@ char* StrMaxCpy(
     char* dst,        //!< [out] Place to store destination string.
     const char* src,  //!< [in] Source string to copy.
     size_t maxLen     //!< [in] Maximum length of `dst` (including the terminating null)
-    ) noexcept;
+);
 
 //! Bounded variant of strcat.
 //! @details Concatenates `src` to `dst`, but makes sure that `dst`
@@ -70,7 +70,7 @@ char* StrMaxCat(
     char* dst,        //!< [in/out] String to concatenate onto.
     const char* src,  //!< [in] String to add to the end of `dst`.
     size_t maxLen     //!< [in] Maximum lengh of `dst` (including the terminating null)
-    ) noexcept;
+);
 
 //!@}
 
@@ -105,7 +105,7 @@ size_t StrPrintf(
     size_t maxLen,    //!< [in] Length out `outStr`.
     const char* fmt,  //!< [in] Printf style format string.
     ...               //!< [in] Varadic arguments associated with format string.
-    ) noexcept __attribute__((format(printf, 3, 4)));
+    ) __attribute__((format(printf, 3, 4)));
 
 //! Writes formatted data into a user supplied buffer.
 //! @return  The number of characters actually contained in `outStr`, not
@@ -117,7 +117,7 @@ size_t vStrPrintf(
     size_t maxLen,    //!< [in] Length out `outStr`.
     const char* fmt,  //!< [in] Printf style format string.
     va_list args      //!< [in] Arguments associated with the format string.
-    ) noexcept __attribute__((format(printf, 3, 0)));
+    ) __attribute__((format(printf, 3, 0)));
 
 //! Generic printf function which writes formatted data by calling a user supplied function.
 //! @details func() will be called to output each character. If func return 1, then
@@ -131,7 +131,7 @@ size_t StrXPrintf(
     void* userParm,       //!< [in] Context passed to func().
     const char* fmt,      //!< [in] Printf style format string.
     ...                   //!< [in] Varadic arguments associated with format string.
-    ) noexcept __attribute__((format(printf, 3, 4)));
+    ) __attribute__((format(printf, 3, 4)));
 
 //! Generic, reentrant printf function.
 //! @details This is the workhorse of the StrPrintf functions.
@@ -216,7 +216,7 @@ size_t vStrXPrintf(
     void* userParm,       //!< [in] Context passed to func().
     const char* fmt,      //!< [in] Printf style format string.
     va_list args          //!< [in] Arguments associated with the format string.
-    ) noexcept __attribute__((format(printf, 3, 0)));
+    ) __attribute__((format(printf, 3, 0)));
 
 //! Variants of the StrPrintf function which doesn't do attribute checking.
 //! @details StrPrintf supports %b, but that isn't an official format specifier, and
@@ -233,25 +233,25 @@ size_t StrBPrintf(
     size_t maxLen,    //!< [in] Length out `outStr`.
     const char* fmt,  //!< [in] Printf style format string.
     ...               //!< [in] Varadic arguments associated with format string.
-    ) noexcept;
+);
 size_t vStrBPrintf(
     char* outStr,     //!< [out] Place to store formatted string.
     size_t maxLen,    //!< [in] Length out `outStr`.
     const char* fmt,  //!< [in] Printf style format string.
     va_list args      //!< [in] Arguments associated with the format string.
-    ) noexcept;
+);
 size_t StrXBPrintf(
     StrXPrintfFunc func,  //!< [in] Function to be called for each character to output.
     void* userParm,       //!< [in] Context passed to func().
     const char* fmt,      //!< [in] Printf style format string.
     ...                   //!< [in] Varadic arguments associated with format string.
-    ) noexcept;
+);
 size_t vStrXBPrintf(
     StrXPrintfFunc func,  //!< [in] Function to be called for each character to output.
     void* userParm,       //!< [in] Context passed to func().
     const char* fmt,      //!< [in] Printf style format string.
     va_list args          //!< [in] Arguments associated with the format string.
-    ) noexcept;
+);
 //! @}
 
 //! @}

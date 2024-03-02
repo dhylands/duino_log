@@ -21,7 +21,7 @@
 Log* Log::logger = nullptr;
 #endif  // LOGGING_ENABLED
 
-void Log::debug(const char* fmt, ...) noexcept {
+void Log::debug(const char* fmt, ...) {
     if constexpr (LOGGING_ENABLED) {
         if (logger != nullptr && logger->should_log(Level::DEBUG)) {
             va_list args;
@@ -32,7 +32,7 @@ void Log::debug(const char* fmt, ...) noexcept {
     }
 }
 
-void Log::info(const char* fmt, ...) noexcept {
+void Log::info(const char* fmt, ...) {
     if constexpr (LOGGING_ENABLED) {
         if (logger != nullptr && logger->should_log(Level::INFO)) {
             va_list args;
@@ -43,7 +43,7 @@ void Log::info(const char* fmt, ...) noexcept {
     }
 }
 
-void Log::warning(const char* fmt, ...) noexcept {
+void Log::warning(const char* fmt, ...) {
     if constexpr (LOGGING_ENABLED) {
         if (logger != nullptr && logger->should_log(Level::WARNING)) {
             va_list args;
@@ -54,7 +54,7 @@ void Log::warning(const char* fmt, ...) noexcept {
     }
 }
 
-void Log::error(const char* fmt, ...) noexcept {
+void Log::error(const char* fmt, ...) {
     if constexpr (LOGGING_ENABLED) {
         if (logger != nullptr && logger->should_log(Level::ERROR)) {
             va_list args;
@@ -65,7 +65,7 @@ void Log::error(const char* fmt, ...) noexcept {
     }
 }
 
-void Log::fatal(const char* fmt, ...) noexcept {
+void Log::fatal(const char* fmt, ...) {
     if constexpr (LOGGING_ENABLED) {
         if (logger != nullptr && logger->should_log(Level::FATAL)) {
             va_list args;
@@ -76,7 +76,7 @@ void Log::fatal(const char* fmt, ...) noexcept {
     }
 }
 
-void Log::log(Level level, const char* fmt, ...) noexcept {
+void Log::log(Level level, const char* fmt, ...) {
     if constexpr (LOGGING_ENABLED) {
         if (logger != nullptr && logger->should_log(level)) {
             va_list args;
@@ -87,7 +87,7 @@ void Log::log(Level level, const char* fmt, ...) noexcept {
     }
 }
 
-void Log::vlog(Level level, const char* fmt, va_list args) noexcept {
+void Log::vlog(Level level, const char* fmt, va_list args) {
     if constexpr (LOGGING_ENABLED) {
         if (logger != nullptr && logger->should_log(level)) {
             logger->do_log(level, fmt, args);

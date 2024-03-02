@@ -74,45 +74,45 @@ class Log {
     static void debug(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) noexcept __attribute__((format(printf, 1, 2)));
+        ) __attribute__((format(printf, 1, 2)));
 
     //! Prints an info level log.
     static void info(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) noexcept __attribute__((format(printf, 1, 2)));
+        ) __attribute__((format(printf, 1, 2)));
 
     //! Prints a warning level log.
     static void warning(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) noexcept __attribute__((format(printf, 1, 2)));
+        ) __attribute__((format(printf, 1, 2)));
 
     //! Prints an error level log.
     static void error(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) noexcept __attribute__((format(printf, 1, 2)));
+        ) __attribute__((format(printf, 1, 2)));
 
     //! Prints a fatal level log.
     static void fatal(
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) noexcept __attribute__((format(printf, 1, 2)));
+        ) __attribute__((format(printf, 1, 2)));
 
     //! Logs a message of the indicated level using varadic arguments.
     static void log(
         Level level,      //!< [in] Level associated with this message.
         const char* fmt,  //!< [in] printf style format string.
         ...               //!< [in] varadic list of parameters
-        ) noexcept __attribute__((format(printf, 2, 3)));
+        ) __attribute__((format(printf, 2, 3)));
 
     //! Logs a message of the indicated level using a va_list/
     static void vlog(
         Level level,      //!< [in] Level associated with this message.
         const char* fmt,  //!< [in] printf style format string.
         va_list args      //!< [in] List of parameters
-        ) noexcept __attribute__((format(printf, 2, 0)));
+        ) __attribute__((format(printf, 2, 0)));
 
  protected:
     //! Function which performs the actual logging.
@@ -120,7 +120,7 @@ class Log {
         Level level,      //!< [in] Level associated with this message.
         const char* fmt,  //!< [in] printf style format string.
         va_list args      //!< [in] List of parameters
-        ) noexcept __attribute__((format(printf, 3, 0))) = 0;
+        ) __attribute__((format(printf, 3, 0))) = 0;
 
     Level curr_level = Level::DEBUG;  //!< Current logging level.
     static Log* logger;               //!< Pointer to the current logger.

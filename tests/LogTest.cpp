@@ -14,8 +14,6 @@
  *
  ****************************************************************************/
 
-// ---- Include Files -------------------------------------------------------
-
 #include <stdarg.h>
 #include <gtest/gtest.h>
 #include <string>
@@ -23,25 +21,6 @@
 
 #include "Log.h"
 #include "Util.h"
-
-extern "C" {
-
-//! Override __assert_fail (called by assert).
-//! @details The normal __assert_fail calls abort() which causes the fact that assert
-//!          was called to get missed by coverage processing. So we override it and
-//!          exit(1) instead.
-void __assert_fail(
-    const char* assertion,  //!< [in] Assertion that fails.
-    const char* file,       //!< [in] Name of file that the assert happens in.
-    unsigned int line,      //!< [in] Line number within the file of the assert.
-    const char* function    //!< [in] Function that the assert happens in.
-    ) noexcept {
-    fprintf(stderr, "%s:%u: %s: Assertion `%s' failed.\n", file, line, function, assertion);
-    fflush(stderr);
-    exit(1);
-}
-
-}  // extern "C"
 
 //! Logger used for tesing Log messages.
 class TestLog : public Log {

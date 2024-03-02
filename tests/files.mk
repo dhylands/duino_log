@@ -1,5 +1,8 @@
+# Note: DeathTest.cpp comes from DuinoUtil/tests
+
 TEST_SOURCES_CPP += \
-	tests/DumpMemTest.cpp \
-	tests/LogTest.cpp \
-	tests/StrTest.cpp \
-	tests/StrPrintfTest.cpp
+	DeathTest.cpp \
+	DumpMemTest.cpp \
+	LogTest.cpp \
+	StrTest.cpp \
+	StrPrintfTest.cpp

@@ -48,7 +48,7 @@ void DumpLine(
     const void* inData,
     size_t numBytes,
     size_t lineLen,
-    char* line) noexcept {
+    char* line) {
     const uint8_t* data = (const uint8_t*)inData;
 
     int prefixLen = 0;
@@ -93,7 +93,7 @@ void DumpLine(
     }
 }  // DumpLine
 
-void DumpMem(const char* prefix, size_t address, const void* inData, size_t numBytes) noexcept {
+void DumpMem(const char* prefix, size_t address, const void* inData, size_t numBytes) {
     auto data = reinterpret_cast<const uint8_t*>(inData);
 
     char line[FMT_LINE_WIDTH];
@@ -114,7 +114,7 @@ void DumpMem(const char* prefix, size_t address, const void* inData, size_t numB
     }
 }  // DumpMem
 
-std::ostream& operator<<(std::ostream& out, const dump& d) noexcept {
+std::ostream& operator<<(std::ostream& out, const dump& d) {
     const uint8_t* data = (const uint8_t*)d.data;
 
     char line[FMT_LINE_WIDTH];

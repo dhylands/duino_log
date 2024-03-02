@@ -34,7 +34,7 @@
 
 // ---- Functions -----------------------------------------------------------
 
-char* StrMaxCat(char* dst, const char* src, size_t maxLen) noexcept {
+char* StrMaxCat(char* dst, const char* src, size_t maxLen) {
     size_t dstLen = strnlen(dst, maxLen);
 
     if (dstLen < maxLen) {
@@ -46,7 +46,7 @@ char* StrMaxCat(char* dst, const char* src, size_t maxLen) noexcept {
     return dst;
 }
 
-char* StrMaxCpy(char* dst, const char* src, size_t maxLen) noexcept {
+char* StrMaxCpy(char* dst, const char* src, size_t maxLen) {
     if (maxLen <= 1) {
         if (maxLen > 0) {
             // There;s only room for the terminating null character

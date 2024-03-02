@@ -128,7 +128,7 @@ typedef struct {
 
 static void OutputChar(Parameters* p, char c);
 static void OutputField(Parameters* p, char* s, uint16_t base);
-static size_t StrPrintfFunc(void* outParm, char ch) noexcept;
+static size_t StrPrintfFunc(void* outParm, char ch);
 
 //!@}
 
@@ -141,7 +141,7 @@ static size_t StrPrintfFunc(void* outParm, char ch) noexcept;
  * @{
  */
 
-size_t StrPrintf(char* outStr, size_t maxLen, const char* fmt, ...) noexcept {
+size_t StrPrintf(char* outStr, size_t maxLen, const char* fmt, ...) {
     int rc;
     va_list args;
 
@@ -152,7 +152,7 @@ size_t StrPrintf(char* outStr, size_t maxLen, const char* fmt, ...) noexcept {
     return rc;
 }
 
-size_t StrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, ...) noexcept {
+size_t StrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, ...) {
     int rc;
     va_list args;
 
@@ -163,7 +163,7 @@ size_t StrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, ...) n
     return rc;
 }
 
-size_t vStrPrintf(char* outStr, size_t maxLen, const char* fmt, va_list args) noexcept {
+size_t vStrPrintf(char* outStr, size_t maxLen, const char* fmt, va_list args) {
     str::StrPrintfParms strParm;
 
     strParm.str = outStr;
@@ -172,7 +172,7 @@ size_t vStrPrintf(char* outStr, size_t maxLen, const char* fmt, va_list args) no
     return vStrXPrintf(str::StrPrintfFunc, &strParm, fmt, args);
 }
 
-size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_list args) noexcept {
+size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_list args) {
     str::Parameters p;
     char controlChar;
 
@@ -547,7 +547,7 @@ static void str::OutputField(Parameters* p, char* s, uint16_t base) {
  *           was overflowed.
  */
 
-static size_t str::StrPrintfFunc(void* outParm, char ch) noexcept {
+static size_t str::StrPrintfFunc(void* outParm, char ch) {
     str::StrPrintfParms* strParm = reinterpret_cast<str::StrPrintfParms*>(outParm);
 
     if (strParm->maxLen > 0) {
@@ -577,25 +577,25 @@ size_t StrBPrintf(
     size_t maxLen,    //!< [in] Length out `outStr`.
     const char* fmt,  //!< [in] Printf style format string.
     ...               //!< [in] Varadic arguments associated with format string.
-    ) noexcept __attribute__((alias("StrPrintf")));
+    ) __attribute__((alias("StrPrintf")));
 size_t vStrBPrintf(
     char* outStr,     //!< [out] Place to store formatted string.
     size_t maxLen,    //!< [in] Length out `outStr`.
     const char* fmt,  //!< [in] Printf style format string.
     va_list args      //!< [in] Arguments associated with the format string.
-    ) noexcept __attribute__((alias("vStrPrintf")));
+    ) __attribute__((alias("vStrPrintf")));
 size_t StrXBPrintf(
     StrXPrintfFunc func,  //!< [in] Function to be called for each character to output.
     void* userParm,       //!< [in] Context passed to func().
     const char* fmt,      //!< [in] Printf style format string.
     ...                   //!< [in] Varadic arguments associated with format string.
-    ) noexcept __attribute__((alias("StrXPrintf")));
+    ) __attribute__((alias("StrXPrintf")));
 size_t vStrXBPrintf(
     StrXPrintfFunc func,  //!< [in] Function to be called for each character to output.
     void* userParm,       //!< [in] Context passed to func().
     const char* fmt,      //!< [in] Printf style format string.
     va_list args          //!< [in] Arguments associated with the format string.
-    ) noexcept __attribute__((alias("vStrXPrintf")));
+    ) __attribute__((alias("vStrXPrintf")));
 //! @}
 
 //! @}

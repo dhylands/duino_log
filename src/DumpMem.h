@@ -37,7 +37,7 @@ void DumpLine(
     size_t numBytes,     //!< [in] number of bytes of data.
     size_t lineLen,      //!< [in] Length of output buffer.
     char* line           //!< [out] Place to store formatted line.
-    ) noexcept;
+);
 
 //! Dumps a page of output for debugging purposes.
 void DumpMem(
@@ -45,7 +45,7 @@ void DumpMem(
     size_t address,      //!< [in] Address to print for the first byteof the data.
     const void* data,    //!< [in] Pointer to the data.
     size_t numBytes      //!< [in] number of bytes of data.
-    ) noexcept;
+);
 
 //! Streaming object which allows outut to be sent to a stream.
 class dump {
@@ -54,7 +54,7 @@ class dump {
     dump(
         const void* data,  //!< [in] Data to dump
         size_t numBytes    //!< [in] Number of bytes to dump
-        ) noexcept
+        )
         : prefix(""), address(0), data(data), numBytes(numBytes) {}
 
     //! Constructor which dumps a regions of memory and produces formatted output.
@@ -63,16 +63,16 @@ class dump {
         size_t address,      //!< [in] Address to print for the first byteof the data.
         const void* data,    //!< [in] Pointer to the data.
         size_t numBytes      //!< [in] number of bytes of data.
-        ) noexcept
+        )
         : prefix(prefix), address(address), data(data), numBytes(numBytes) {}
 
     //! Streaming operator
     //! @returns the stream being operated on.
     std::ostream& operator<<(std::ostream&  //!< [in] Stream that the output should go to.
-    ) const noexcept;
+    ) const;
 
  private:
-    friend std::ostream& operator<<(std::ostream& out, const dump& d) noexcept;
+    friend std::ostream& operator<<(std::ostream& out, const dump& d);
 
     const char* prefix;  //!< Prefix that each line should be prefixed with.
     size_t address;      //!< Address to print that corresponds to byte 0.
@@ -85,6 +85,6 @@ class dump {
 std::ostream& operator<<(
     std::ostream& out,  //!< [in] Stream that output should go to.
     const dump& d       //!< [in] dump object describing the data to format.
-    ) noexcept;
+);
 
 /** @} */

@@ -13,22 +13,22 @@
  *
  ****************************************************************************/
 /**
- *   @file   Simple.ino
+ *   @file   ColorLog.ino
  *
- *   @brief  Simple program for demonstrating the ArduinoSimpleLog.
+ *   @brief  Sample Arduino Log which generates colored output.
  *
  ****************************************************************************/
 
-#include "DuinoLog.h"
-
 #include <cinttypes>
+
+#include "duino_log.h"
 
 //! Global logger object
 ArduinoColorSerialLog serial_log{&Serial};
 
 //! Perform one-time setup
 void setup(void) {
-    Serial.begin();
+    Serial.begin(115200);
 }
 
 static uint32_t counter = 0;

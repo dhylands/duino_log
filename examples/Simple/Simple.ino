@@ -19,9 +19,9 @@
  *
  ****************************************************************************/
 
-#include "DuinoLog.h"
-
 #include <cinttypes>
+
+#include "duino_log.h"
 
 //! Global logger object
 ArduinoSerialLog serial_log{&Serial};

@@ -8,7 +8,7 @@
  *
  ****************************************************************************/
 /**
- *   @file   DuinoLog.h
+ *   @file   duino_log.h
  *
  *   @brief  Logging and string manipulation functions.
  *
@@ -16,9 +16,4 @@
 
 #pragma once
 
-#include "ArduinoColorSerialLog.h"
-#include "ArduinoSerialLog.h"
-#include "DumpMem.h"
-#include "Log.h"
-#include "Str.h"
-#include "Util.h"
+#include "src/duino_log.h"

@@ -1,4 +1,4 @@
-# Note: DeathTest.cpp comes from DuinoUtil/tests
+# Note: DeathTest.cpp comes from duino_util/tests
 
 TEST_SOURCES_CPP += \
 	DeathTest.cpp \

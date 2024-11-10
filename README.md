@@ -1,9 +1,9 @@
-# DuinoLog
+# duino_log
 A simple logging facility.
 
 [TOC]
 
-There are 5 major submodules provided by the DuinoLog library:
+There are 5 major submodules provided by the duino_log library:
 - Log
 - DumpMem
 - Str

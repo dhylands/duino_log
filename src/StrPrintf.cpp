@@ -187,6 +187,7 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
             int16_t precision = -1;
             int16_t longArg = 0;
             int16_t longLongArg = 0;
+            int16_t sizeArg = 0;
             int16_t base = 0;
 
             controlChar = pgm_read_byte(fmt++);
@@ -255,6 +256,11 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
                     longLongArg = 1;
                     controlChar = pgm_read_byte(fmt++);
                 }
+            }
+
+            if (controlChar == 'z') {
+                sizeArg = 1;
+                controlChar = pgm_read_byte(fmt++);
             }
 
             if (controlChar == 'h') {
@@ -332,6 +338,8 @@ size_t vStrXPrintf(StrXPrintfFunc outFunc, void* outParm, const char* fmt, va_li
                         x = va_arg(args, unsigned long long);  // NOLINT
                     } else if (longArg) {
                         x = va_arg(args, unsigned long);  // NOLINT
+                    } else if (sizeArg) {
+                        x = va_arg(args, size_t);  // NOLINT
                     } else if (controlChar == 'd') {
                         x = va_arg(args, int);
                     } else {

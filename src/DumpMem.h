@@ -20,6 +20,7 @@
 
 #include <ostream>
 #include <cstddef>
+#include <cstdint>
 
 /**
  * @addtogroup Log

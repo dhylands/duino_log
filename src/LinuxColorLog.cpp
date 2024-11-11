@@ -15,6 +15,9 @@
  ****************************************************************************/
 
 #include "LinuxColorLog.h"
+
+#include <cstdio>
+
 #include "Str.h"
 
 const char* LinuxColorLog::level_str[] = {

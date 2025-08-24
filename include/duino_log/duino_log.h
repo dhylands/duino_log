@@ -21,4 +21,3 @@
 #include "duino_log/DumpMem.h"
 #include "duino_log/Log.h"
 #include "duino_log/Str.h"
-#include "duino_log/Util.h"

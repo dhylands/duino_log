@@ -19,8 +19,8 @@
 #include <string>
 #include <sstream>
 
-#include "Log.h"
-#include "Util.h"
+#include "duino_log/Log.h"
+#include "duino_util/Util.h"
 
 //! Logger used for tesing Log messages.
 class TestLog : public Log {

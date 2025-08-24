@@ -22,7 +22,7 @@
 
 #include <cassert>
 
-#include "Str.h"
+#include "duino_log/Str.h"
 
 // ---- Public Variables ----------------------------------------------------
 

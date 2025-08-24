@@ -42,7 +42,7 @@
 #include <cstring>
 #include <string>
 
-#include "Str.h"
+#include "duino_log/Str.h"
 
 #if defined(AVR)
 

@@ -21,7 +21,7 @@
 #include <cassert>
 #include <cinttypes>
 
-#include "Str.h"
+#include "duino_log/Str.h"
 
 #if !defined(DISABLE_LOGGING)
 //! Define DISABLE_LOGGING to have all traces of logging disappear.
@@ -47,7 +47,7 @@ class Log {
     //! Constructor.
     Log() {
         assert(logger == nullptr);
-        logger = this;
+        this->logger = this;
     }
 
     //! Destructor.
@@ -55,7 +55,8 @@ class Log {
 
     //! Determines if a log level is enabled.
     //! @returns Returns true if `level` should be logged based on the current logging level.
-    bool should_log(Level level  //!< [in] Log level to test.
+    bool should_log(
+        Level level  //!< [in] Log level to test.
     ) const {
         return static_cast<uint_fast8_t>(level) <= static_cast<uint_fast8_t>(this->curr_level);
     }
@@ -65,7 +66,8 @@ class Log {
     Level get_level() const { return this->curr_level; }
 
     //! Sets the current logging level.
-    void set_level(Level level  //!< [in] Level to set the current logging level to.
+    void set_level(
+        Level level  //!< [in] Level to set the current logging level to.
     ) {
         this->curr_level = level;
     }
@@ -114,7 +116,7 @@ class Log {
         va_list args      //!< [in] List of parameters
         ) __attribute__((format(printf, 2, 0)));
 
- protected:
+ public:
     //! Function which performs the actual logging.
     virtual void do_log(
         Level level,      //!< [in] Level associated with this message.

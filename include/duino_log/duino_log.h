@@ -16,4 +16,9 @@
 
 #pragma once
 
-#include "duino_log//duino_log.h"
+#include "duino_log/ArduinoColorSerialLog.h"
+#include "duino_log/ArduinoSerialLog.h"
+#include "duino_log/DumpMem.h"
+#include "duino_log/Log.h"
+#include "duino_log/Str.h"
+#include "duino_log/Util.h"

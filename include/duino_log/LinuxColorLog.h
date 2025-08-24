@@ -18,8 +18,8 @@
 
 #include <cstdio>
 
-#include "ConsoleColor.h"
-#include "Log.h"
+#include "duino_log/ConsoleColor.h"
+#include "duino_log/Log.h"
 
 //! Class which sends logging output to an Arduino Serial device.
 class LinuxColorLog : public Log {
@@ -28,8 +28,9 @@ class LinuxColorLog : public Log {
     static const char* level_str[];
 
     //! @brief Constructor
-    LinuxColorLog(FILE* log_fs  //!< [in] File to send logging output to.
-                  )
+    LinuxColorLog(
+        FILE* log_fs  //!< [in] File to send logging output to.
+        )
         : m_log_fs{log_fs} {}
 
  protected:

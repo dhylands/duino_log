@@ -8,26 +8,29 @@
  *
  ****************************************************************************/
 /**
- *   @file   ArduinoSerialLog.h
+ *   @file   PicoColorLog.h
  *
- *   @brief  Arduino logger which logs to the Serial device.
+ *   @brief  Pico logger which logs to stdout device.
  *
  ****************************************************************************/
 
 #pragma once
 
-#include <Arduino.h>
+#include <stdio.h>
 
-#include "Log.h"
+#include "pico/stdlib.h"
+
+#include "duino_log/ConsoleColor.h"
+#include "duino_log/Log.h"
 
 //! Class which sends logging output to an Arduino Serial device.
-class ArduinoSerialLog : public Log {
+class PicoColorLog : public Log {
  public:
+    //! Array of color/prefixes to use for each logging level.
+    static const char* level_str[];
+
     //! Constructor.
-    explicit ArduinoSerialLog(
-        HardwareSerial* serial  //!< [in] Serial device that output should be sent to
-        )
-        : serial{serial} {}
+    PicoColorLog() : Log() {}
 
  protected:
     //! Implements the actual logging function.
@@ -36,22 +39,25 @@ class ArduinoSerialLog : public Log {
         const char* fmt,  //!< Printf style format string
         va_list args      //!< Arguments associated with format string.
         ) override {
-        vStrXPrintf(log_char_to_serial, this, fmt, args);
-        this->serial->print('\r');
-        this->serial->print('\n');
+        uint_fast8_t int_level = static_cast<uint_fast8_t>(level);
+        if (int_level <= static_cast<uint_fast8_t>(Level::DEBUG)) {
+            fputs(level_str[int_level], stdout);
+        }
+        vStrXPrintf(log_char_to_stdout, this, fmt, args);
+        fputs(COLOR_NO_COLOR, stdout);
+        putc('\r', stdout);
+        putc('\n', stdout);
+        fflush(stdout);
     }
 
     //! Function called from vStrXPrintf which outputs a single character of output.
     //! @returns 1 if the character was logged successzfully, 0 otherwise.
-    static size_t log_char_to_serial(
+    static size_t log_char_to_stdout(
         void* outParam,  //!< Pointer to ArduinoSerialLogger object.
         char ch          //!< Character to output.
     ) {
-        auto this_ = reinterpret_cast<ArduinoSerialLog*>(outParam);
-        this_->serial->print(ch);
+        (void)outParam;
+        putc(ch, stdout);
         return 1;
     }
-
- private:
-    HardwareSerial* serial;  //!< The serial device that we're logging to.
 };

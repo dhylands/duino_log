@@ -21,10 +21,10 @@
 #include <string>
 #include <sstream>
 
-#include "DumpMem.h"
-#include "Log.h"
-#include "Str.h"
-#include "Util.h"
+#include "duino_log/DumpMem.h"
+#include "duino_log/Log.h"
+#include "duino_log/Str.h"
+#include "duino_util/Util.h"
 
 static uint8_t data[] = {
     0x00, 0x01, 0x02, 0x31, 0x32, 0x33, 0x41, 0x42, 0x43, 0x11, 0x12, 0x13, 0x36, 0x37, 0x38, 0x39,

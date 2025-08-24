@@ -8,7 +8,7 @@
  *
  ****************************************************************************/
 /**
- *   @file   ArduinoColorSerialLog.h
+ *   @file   ArduinoSerialLog.h
  *
  *   @brief  Arduino logger which logs to the Serial device.
  *
@@ -18,17 +18,13 @@
 
 #include <Arduino.h>
 
-#include "ConsoleColor.h"
-#include "Log.h"
+#include "duino_log/Log.h"
 
 //! Class which sends logging output to an Arduino Serial device.
-class ArduinoColorSerialLog : public Log {
+class ArduinoSerialLog : public Log {
  public:
-    //! Array of color/prefixes to use for each logging level.
-    static const char* level_str[];
-
     //! Constructor.
-    explicit ArduinoColorSerialLog(
+    explicit ArduinoSerialLog(
         HardwareSerial* serial  //!< [in] Serial device that output should be sent to
         )
         : serial{serial} {}
@@ -40,12 +36,7 @@ class ArduinoColorSerialLog : public Log {
         const char* fmt,  //!< Printf style format string
         va_list args      //!< Arguments associated with format string.
         ) override {
-        uint_fast8_t int_level = static_cast<uint_fast8_t>(level);
-        if (int_level <= static_cast<uint_fast8_t>(Level::DEBUG)) {
-            this->serial->print(level_str[int_level]);
-        }
         vStrXPrintf(log_char_to_serial, this, fmt, args);
-        this->serial->print(COLOR_NO_COLOR);
         this->serial->print('\r');
         this->serial->print('\n');
     }
@@ -56,7 +47,7 @@ class ArduinoColorSerialLog : public Log {
         void* outParam,  //!< Pointer to ArduinoSerialLogger object.
         char ch          //!< Character to output.
     ) {
-        auto this_ = reinterpret_cast<ArduinoColorSerialLog*>(outParam);
+        auto this_ = reinterpret_cast<ArduinoSerialLog*>(outParam);
         this_->serial->print(ch);
         return 1;
     }

@@ -24,8 +24,8 @@
 #include <string>
 #include <sstream>
 
-#include "Str.h"
-#include "Util.h"
+#include "duino_log/Str.h"
+#include "duino_util/Util.h"
 
 //! Struct with a format string and a type
 //! @tparam T The type of the value.

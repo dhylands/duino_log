@@ -14,11 +14,11 @@
  *
  ****************************************************************************/
 
-#include "LinuxColorLog.h"
+#include "duino_log/LinuxColorLog.h"
 
 #include <cstdio>
 
-#include "Str.h"
+#include "duino_log/Str.h"
 
 const char* LinuxColorLog::level_str[] = {
     // clang-format off

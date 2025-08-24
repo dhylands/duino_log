@@ -14,7 +14,7 @@
  *
  ****************************************************************************/
 
-#include "Log.h"
+#include "duino_log/Log.h"
 
 #if LOGGING_ENABLED
 //! Pointer to the global logger object.

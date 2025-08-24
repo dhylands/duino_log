@@ -14,7 +14,7 @@
  *
  ****************************************************************************/
 
-#include "ArduinoColorSerialLog.h"
+#include "duino_log/ArduinoColorSerialLog.h"
 
 const char* ArduinoColorSerialLog::level_str[] = {
     // clang-format off

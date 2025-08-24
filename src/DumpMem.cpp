@@ -16,15 +16,15 @@
 
 // ---- Include Files -------------------------------------------------------
 
-#include "DumpMem.h"
+#include "duino_log/DumpMem.h"
 
 #include <algorithm>
 #include <cctype>
 #include <cinttypes>
 #include <climits>
 
-#include "Log.h"
-#include "Str.h"
+#include "duino_log/Log.h"
+#include "duino_log/Str.h"
 
 // ---- Public Variables ----------------------------------------------------
 // ---- Private Constants and Types -----------------------------------------

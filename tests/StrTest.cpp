@@ -21,8 +21,8 @@
 #include <string>
 #include <sstream>
 
-#include "Str.h"
-#include "Util.h"
+#include "duino_log/Str.h"
+#include "duino_util/Util.h"
 
 TEST(StrMaxCpyTest, Normal) {
     char dst[20];

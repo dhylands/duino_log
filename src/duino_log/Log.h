@@ -35,7 +35,7 @@
 class Log {
  public:
     //! Logging levels.
-    enum class Level {
+    enum class Level : uint8_t {
         NONE,     //!< Logging is disabled
         FATAL,    //!< Fatal (i.e. asserts)
         ERROR,    //!< Errors

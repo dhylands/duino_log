@@ -16,6 +16,13 @@
 
 #include "duino_log/PicoColorLog.h"
 
+#include <stdarg.h>
+#include <stdio.h>
+
+#include "pico/stdlib.h"
+
+#include "duino_log/ConsoleColor.h"
+
 const char* PicoColorLog::level_str[] = {
     // clang-format off
                         "",     // NONE
@@ -26,3 +33,21 @@ const char* PicoColorLog::level_str[] = {
     COLOR_DARK_WHITE    "[D] ",  // DEBUG
     // clang-format off
 };
+
+size_t PicoColorLog::log_char_to_stdout(void* outParam, char ch) {
+    (void)outParam;
+    putc(ch, stdout);
+    return 1;
+}
+
+void PicoColorLog::do_log(Level level, const char* fmt, va_list args) {
+    uint_fast8_t int_level = static_cast<uint_fast8_t>(level);
+    if (int_level <= static_cast<uint_fast8_t>(Level::DEBUG)) {
+        fputs(level_str[int_level], stdout);
+    }
+    vStrXPrintf(log_char_to_stdout, this, fmt, args);
+    fputs(COLOR_NO_COLOR, stdout);
+    putc('\r', stdout);
+    putc('\n', stdout);
+    fflush(stdout);
+}

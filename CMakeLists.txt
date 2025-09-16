@@ -6,5 +6,5 @@ add_library(duino_log STATIC
     src/StrPrintf.cpp
 )
 
-target_include_directories(duino_log PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(duino_log PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(duino_log pico_stdlib)

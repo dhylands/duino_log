@@ -27,6 +27,9 @@ class PicoColorLog : public Log {
     //! Constructor.
     PicoColorLog() : Log() {}
 
+    //! Desructor.
+    ~PicoColorLog() override = default;
+
  protected:
     //! Implements the actual logging function.
     void do_log(
